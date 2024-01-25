@@ -58,6 +58,11 @@ double reduce() {
     return _res;
 }
 
+/*
+  Instruction asked us to implement but according to 
+  https://piazza.com/class/lr65x3cv2qs3d3/post/21
+  ignore it
+*/
 double flex_reduce(void (*clear)(double *), double (*op)(double, double)) {
     int ndx = _rear;
 

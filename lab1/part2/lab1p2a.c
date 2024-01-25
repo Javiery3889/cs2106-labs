@@ -4,11 +4,13 @@
 int *p1, *p2, *p3, *p4;
 
 void fun1(int x, int y) {
+    // fun(5, 6)
+    static int w; // assigned to stack along with the p*n
+    // hence it retains it value even after fun1 exits
 
-    static int w;
     int z;
-    w = x * y;
-    z = x + y;
+    w = x * y; // 30
+    z = x + y; // 11
 
     printf("Inside fun1\n");
     p1 = &w;
@@ -18,6 +20,7 @@ void fun1(int x, int y) {
     printf("Address of p1 = %p, address of p2 = %p, address of p3 = %p, address of p4 = %p\n", &p1, &p2, &p3, &p4);
     printf("Address of w = %p, address of x = %p, address of y = %p, address of z = %p\n", p1, p2, p3, p4);
     printf("w = %d, x = %d, y = %d, z = %d\n", w, x, y, z);
+    // 
 }
 
 
