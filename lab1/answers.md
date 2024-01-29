@@ -66,3 +66,8 @@ Added the static key word to acc:
   static int acc = 0; 
 
 This allows the value of acc to be persisted. Because static variables are only initialized once, the value do not get wiped out every call and it can keep the value are the end of each accumulate call. 
+
+## Question 3.2
+
+gcc -g testlist.c llist.c -o testlist
+
