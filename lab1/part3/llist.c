@@ -84,6 +84,13 @@ void delete_llist(TLinkedList **head, TLinkedList *node) {
     if (next != NULL) {
         next->prev = prev;
     }
+    if (current == *head) {
+        if (current->next != NULL) {
+            *head = current->next;
+        } else {
+            *head = NULL;
+        }
+    }
     free(current);
     // head = &current;
 }
