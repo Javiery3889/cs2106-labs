@@ -47,11 +47,9 @@ int main() {
     // Initialize the hash table
     init_hashtable(hashtable, TABLE_LEN);
 
-    int i;
-
     printf("\nAdding files.\n");
 
-    for(i=0; i<NUM_FNAMES; i++) {
+    for(int i=0; i<NUM_FNAMES; i++) {
         add_file(fnames[i].filename, fnames[i].filesize, fnames[i].startblock,
             hash, hashtable, TABLE_LEN);
     }
@@ -107,7 +105,7 @@ int main() {
         printf("ERROR: File should not be found\n");
 
     // Now search again for work.jpg
-    printf("\nSearhing for %s\n", NEW_FILE);
+    printf("\nSearching for %s\n", NEW_FILE);
     filedata = find_file(NEW_FILE, hash, hashtable, TABLE_LEN);
 
     if(!filedata)
@@ -136,4 +134,6 @@ int main() {
     else
         printf("ERROR: File still exists!\n");
 
+
+    free_all_lists(hashtable, TABLE_LEN);
 }
