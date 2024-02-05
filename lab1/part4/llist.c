@@ -64,7 +64,7 @@ void delete_llist(TLinkedList **head, TLinkedList *node) {
 			TLinkedList *next = node->next;
 			*head = next;
 		} else {
-			head = NULL;
+			*head = NULL;
 		}
 	} else {
 		TLinkedList *curr = *head;
