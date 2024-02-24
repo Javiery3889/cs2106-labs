@@ -35,10 +35,11 @@ done
     # Compare with reference output files  and award 1 mark if they are identical
 # print score for student
 # print total files marked.
+result_file="results.out"
 day=$(date +%A)
 date=$(date +"%d %B %Y")
 time=$(date +%T)
-echo -e "Test date and time: $day, $date, $time\n" > "ref/results.out"
+echo -e "Test date and time: $day, $date, $time\n" > $result_file 
 
 max_score=$no_of_files
 for dir in subs/*
@@ -48,8 +49,8 @@ do
     gcc $dir/*.c -o "$dir/$1" 2> /dev/null
 
     if [[ $? -ne 0 ]]; then
-        echo "Directory $student_no has a compile error." >> "ref/results.out"
-        echo "Directory $student_no score 0 / $max_score" >> "ref/results.out"
+        echo "Directory $student_no has a compile error." >> $result_file 
+        echo "Directory $student_no score 0 / $max_score" >> $result_file
         continue
     fi
 
@@ -63,8 +64,8 @@ do
         fi
     done
 
-    echo "Directory $student_no score $score / $max_score" >> "ref/results.out"
+    echo "Directory $student_no score $score / $max_score" >> $result_file
 done
 
-echo -e "\nProcessed $no_of_files files." >> "ref/results.out"
+echo -e "\nProcessed $no_of_files files." >> $result_file
 
