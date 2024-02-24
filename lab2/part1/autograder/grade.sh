@@ -6,6 +6,8 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
+executable_name=$1
+
 # Delete temporary files
 out_files=$(ls ref/*.out 2> /dev/null)
 if [[ -n "$out_files" ]]; then
@@ -13,7 +15,7 @@ if [[ -n "$out_files" ]]; then
 fi
 
 # Compile the reference program
-gcc ref/*.c -o "ref/$1"
+gcc ref/*.c -o "ref/$executable_name"
 
 # Generate reference output files
 no_of_files=0
@@ -44,19 +46,23 @@ do
     score=0
     student_no=${dir##*/}   # get everything after the final "/"
     gcc $dir/*.c -o "$dir/$1" 2> /dev/null
+
     if [[ $? -ne 0 ]]; then
         echo "Directory $student_no has a compile error." >> "ref/results.out"
-    else
-        for input in ref/*.in; do
-            input_filename=${input##*/}
-            student_outfile="ref/$student_no"_"$input_filename.out"
-            $dir/$1 < $input > $student_outfile
-            cmp -s "$input.out" $student_outfile
-            if [[ $? -eq 0 ]]; then
-                ((score++))
-            fi
-        done
+        echo "Directory $student_no score 0 / $max_score" >> "ref/results.out"
+        continue
     fi
+
+    for input in ref/*.in; do
+        input_filename=${input##*/}
+        student_outfile="ref/$student_no"_"$input_filename.out"
+        "$dir/$executable_name" < $input > $student_outfile
+        cmp -s "$input.out" $student_outfile
+        if [[ $? -eq 0 ]]; then
+            ((score++))
+        fi
+    done
+
     echo "Directory $student_no score $score / $max_score" >> "ref/results.out"
 done
 
