@@ -20,7 +20,7 @@ gcc ref/*.c -o "ref/$executable_name"
 # Generate reference output files
 no_of_files=0
 for input in ref/*.in; do
-    ref/fun < $input > "$input.out"
+    ref/$executable_name < $input > "$input.out"
     ((no_of_files++))
 done
 
