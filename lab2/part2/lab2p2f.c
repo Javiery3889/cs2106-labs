@@ -12,9 +12,9 @@ int main() {
     printf("Be patient, the program will take around 7 seconds to run.\n");
     printf("At the end you can do \"cat results.out\" to see the result.\n");
 
-    int fp_out = open("./result.out", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    int fp_out = open("./results.out", O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (fp_out < 0) {
-        perror("Failed to open result.out");
+        perror("Failed to open results.out");
         exit(EXIT_FAILURE);
     }
 
@@ -29,6 +29,8 @@ int main() {
         close(pipe_fd[READ_END]);
         // stdout now goes to pipe write end
         dup2(pipe_fd[WRITE_END], STDOUT_FILENO);
+        // close original fd
+        close(pipe_fd[WRITE_END]);
         execlp("./slow", "slow", "5", NULL);
     } else {
         close(pipe_fd[WRITE_END]);
@@ -37,6 +39,9 @@ int main() {
         // stdin now goes to pipe read end
         dup2(pipe_fd[READ_END], STDIN_FILENO);
         dup2(fp_out, STDOUT_FILENO);
+        // close original fd
+        close(pipe_fd[READ_END]);
+        close(fp_out);
         execlp("./talk", "talk", NULL);
     }
 }
