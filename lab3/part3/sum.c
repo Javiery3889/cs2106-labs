@@ -17,18 +17,18 @@ int main() {
     }
 
     long int sum=0;
-   
+
     start = clock();
     for(i=0; i<VECT_SIZE; i++) {
         sum+=vect[i];
 
-      
+
     }
     end = clock();
     time_taken = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     printf("\nNumber of items: %d\n", VECT_SIZE);
     printf("Sum %ld\n", sum);
-     printf("Time taken is %3.10f\n\n", time_taken);
+    printf("Time taken is %3.10f\n\n", time_taken);
 }
 

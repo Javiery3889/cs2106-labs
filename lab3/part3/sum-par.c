@@ -38,8 +38,9 @@ int main() {
 
     shmid1 = shmget(IPC_PRIVATE, NUM_PROCESSES * sizeof(int), IPC_CREAT | 0600);
     all_sum = (long int *) shmat(shmid1, NULL, 0);
-    
 
+    // init barrier in parent
+    init_barrier(NUM_PROCESSES + 1);
 
     for(i=0; i<NUM_PROCESSES; i++) {
         pid = fork();
@@ -52,17 +53,24 @@ int main() {
     long int sum = 0;
 
     if(pid == 0) {
-
-	/*insert code */
-        
-    }
-    else 
-    {
+        int start_idx = i * per_process;
+        int end_idx = start_idx + per_process;
+        for (j = start_idx; j < end_idx; j++) {
+            sum += vect[j];
+        }
+        // add final sum to corresponding index of shared memory
+        all_sum[i] = sum;
+        reach_barrier();
+    } else {
         start = clock();
-    
-   	/* insert code */
-    
-	end = clock();
+
+        reach_barrier();
+
+        for (j = 0; j < NUM_PROCESSES; j++) {
+            sum += all_sum[j];
+        }
+
+        end = clock();
 
         time_taken = ((double) end - start) / CLOCKS_PER_SEC;
 
@@ -74,9 +82,12 @@ int main() {
         for(j=0; j<NUM_PROCESSES; j++)
             wait(NULL);
 
+        // destroy all semaphores, destory and detach any shared memory
+        // done in parent process
+        destroy_barrier(pid);
         shmdt(all_sum);
         shmctl(shmid1, IPC_RMID, 0);
-     }
+    }
 }
 
 
