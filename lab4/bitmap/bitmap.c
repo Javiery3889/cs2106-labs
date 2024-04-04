@@ -38,8 +38,27 @@ void print_map(unsigned char *map, int len) {
 // Returns: Index to stretch of 0's of required length, -1 if no such stretch can be found
 
 long search_map(unsigned char *bitmap, int len, long num_zeroes) {
+    long num_bits = len * 8;
+    if (num_bits < num_zeroes) {
+        return -1;
+    }
+
+    long count = 0;
+    for (long i = 0; i < num_bits; i++) {
+        int byte_idx = i / 8;
+        int offset = i % 8;
+        unsigned char mask = 1 << (7 - offset);
+        if (!(bitmap[byte_idx] & mask)) {
+            count++;
+            if (count == num_zeroes) {
+                return i - num_zeroes + 1;
+            }
+        } else {
+            count = 0;
+        }
+    }
     return -1;
-} //main
+}
 
 // Set map bits to 0 or 1 depending on whether value is non-zero
 // map = Bitmap, declared as an array of unsigned char
@@ -50,25 +69,35 @@ long search_map(unsigned char *bitmap, int len, long num_zeroes) {
 // Returns: Nothing
 
 void set_map(unsigned char *map, long start, long length, int value) {
+    long bits_from_start = length + start;
+    for (long i = start; i < bits_from_start; i++) {
+        int byte_idx = i >> 3;
+        int offset = i % 8;
+        unsigned char mask = 1 << (7 - offset);
+
+        if (value) {
+            map[byte_idx] |= mask;
+        } else {
+            map[byte_idx] &= ~mask;
+        }
+    }
 }
 
-// IMPLEMENTED FOR YOU
 // Marks a stretch of bits as "1", representing allocated memory
 // map = Bitmap declared as array of unsigned char
 // start = Starting index to mark
 // length = Number of bits to mark as "1"
 void allocate_map(unsigned char *map, long start, long length) {
-
-    
+    set_map(map, start, length, 1);
 
 }
 
-// IMPLEMENTED FOR YOU
 // Marks a stretch of bits as "0", representing allocated memory
 // map = Bitmap declared as array of unsigned char
 // start = Starting index to mark
 // length = Number of bits to mark as "0"
 void free_map(unsigned char *map, long start, long length) {
+    set_map(map, start, length, 0);
     
 }
 
