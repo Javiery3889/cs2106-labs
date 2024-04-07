@@ -38,18 +38,13 @@ void *mymalloc(size_t size) {
         data->val = MEMSIZE;
         data->is_free = 1;
         _memlist = make_node(0, data);
+        prev_allocated = _memlist;
     }
 
-    TNode *curr;
+    TNode *start = prev_allocated;
+    TNode *curr = prev_allocated;
 
-    // if prev_allocated not null, traversal continues form prev allocated node
-    if (prev_allocated) {
-        curr = prev_allocated;
-    } else {
-        curr = _memlist;
-    }
-
-    while (curr) {
+    do {
         if (curr->pdata->is_free && size <= curr->pdata->val) {
             TData *data = malloc(sizeof(TData));
             data->val = size;
@@ -67,8 +62,14 @@ void *mymalloc(size_t size) {
             }
             return &_heap[new_node->key];
         }
+
         curr = curr->next;
-    }
+        // wrap around to head of LL
+        if (curr == NULL) {
+            curr = _memlist;
+        }
+    } while (curr != start);
+
     return NULL;
 }
 
