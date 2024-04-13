@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include "mymalloc.h"
 #include "llist.h"
 
@@ -21,9 +20,9 @@ void print_memlist() {
     while (curr) {
         TData *data = curr->pdata;
         if (data->is_free) {
-            printf("Status: FREE Start index: %d Length: %d\n", curr->key, data->val);
+            printf("Status: FREE Start index: %d Length: %zu\n", curr->key, data->size);
         } else {
-            printf("Status: ALLOCATED Start index: %d Length: %d\n", curr->key, data->val);
+            printf("Status: ALLOCATED Start index: %d Length: %zu\n", curr->key, data->size);
         }
         curr = curr->next;
     }
@@ -34,24 +33,24 @@ void print_memlist() {
 void *mymalloc(size_t size) {
     if (_memlist == NULL) {
         TData *data = malloc(sizeof(TData));
-        data->val = MEMSIZE;
+        data->size = MEMSIZE;
         data->is_free = 1;
         _memlist = make_node(0, data);
     }
 
     TNode *curr = _memlist;
     TData *data = malloc(sizeof(TData));
-    data->val = INT_MIN;
+    // smallest value is 0 for unsigned int
+    data->size = 0;
     data->is_free = 1;
     TNode *max_node = NULL;
 
-
     while (curr) {
-        if (curr->pdata->is_free && size <= curr->pdata->val) {
+        if (curr->pdata->is_free && size <= curr->pdata->size) {
             if (max_node == NULL) {
                 max_node = make_node(0, data);
             }
-            if (max_node->pdata->val <= curr->pdata->val) {
+            if (max_node->pdata->size <= curr->pdata->size) {
                 max_node = curr;
             }
         }
@@ -61,15 +60,15 @@ void *mymalloc(size_t size) {
         return NULL;
     }
 
-    data->val = size;
+    data->size = size;
     data->is_free = 0;
     TNode *new_node = make_node(max_node->key, data);
     insert_node(&_memlist, new_node, ASCENDING);
 
     max_node->key += size;
-    max_node->pdata->val -= size;
+    max_node->pdata->size -= size;
 
-    if (max_node->pdata->val == 0) {
+    if (max_node->pdata->size == 0) {
         delete_node(&_memlist, max_node);
     }
     return &_heap[new_node->key];
@@ -84,12 +83,12 @@ void myfree(void *ptr) {
         TNode *next = node->next;
         TNode *prev = node->prev;
         while (next && next->pdata->is_free) {
-            node->pdata->val += next->pdata->val;
+            node->pdata->size += next->pdata->size;
             next = next->next;
             merge_node(_memlist, node, 1);
         }
         while (prev && prev->pdata->is_free) {
-            prev->pdata->val += node->pdata->val;
+            prev->pdata->size += node->pdata->size;
             prev = prev->prev;
             merge_node(_memlist, node, 0);
         }
